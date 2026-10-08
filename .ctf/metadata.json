@@ -1,0 +1,9 @@
+{
+  "title": "Vulnerable Node (NodeBazaar)",
+  "description": "NodeBazaar, the 2026 rewrite of vulnerable-node: a working Node.js shop on PostgreSQL and MongoDB with real vulnerable code paths mapped to the OWASP Top 10:2025, including IDOR, SSRF to a mock cloud metadata service and vault, SQL and NoSQL injection, mass assignment, stored XSS, forgeable JWTs and prototype pollution.",
+  "question": "Exploit the shop's vulnerabilities, from the order IDOR to the SSRF that reaches the vault secret.",
+  "category": "WEB",
+  "difficulty": 2,
+  "evidence_kind": "SECRET",
+  "capabilities": ["insecure-direct-object-reference", "server-side-request-forgery", "sql-injection", "nosql-injection", "jwt-attacks", "prototype-pollution"]
+}

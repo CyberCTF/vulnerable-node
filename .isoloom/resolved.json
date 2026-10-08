@@ -1,0 +1,537 @@
+{
+  "generated_by_isoloom": "from isoloom.yml; don't edit: change the spec and run `isoloom generate` (`isoloom check` fails when this file is out of date)",
+  "resolved_version": 1,
+  "name": "vulnerable-node",
+  "instance": null,
+  "inputs": [],
+  "networks": {
+    "lab": {
+      "cidr": "10.60.15.0/24",
+      "docker_cidr": "10.60.15.0/24",
+      "internet": false,
+      "gateway": null,
+      "gateway_address": "10.60.15.1",
+      "router": null,
+      "controller": "10.60.15.253"
+    }
+  },
+  "reach": [],
+  "machines": {
+    "db": {
+      "access": false,
+      "supplied": false,
+      "shapes": [
+        "docker"
+      ],
+      "arch": "amd64",
+      "os": null,
+      "windows": false,
+      "addresses": {
+        "lab": "10.60.15.20"
+      },
+      "docker_addresses": {
+        "lab": "10.60.15.20"
+      },
+      "services": [
+        {
+          "port": 5432,
+          "name": "postgres",
+          "http": false,
+          "publish": null
+        }
+      ],
+      "depends_on": [],
+      "inputs": [],
+      "volumes": {
+        "pgdata": "/var/lib/postgresql/data"
+      },
+      "resources": {
+        "cpus": 1,
+        "memory_mb": 512,
+        "disk_gb": 20
+      },
+      "gateway_of": [],
+      "routes": [],
+      "default_gateway": null,
+      "offline": true
+    },
+    "mongo": {
+      "access": false,
+      "supplied": false,
+      "shapes": [
+        "docker"
+      ],
+      "arch": "amd64",
+      "os": null,
+      "windows": false,
+      "addresses": {
+        "lab": "10.60.15.21"
+      },
+      "docker_addresses": {
+        "lab": "10.60.15.21"
+      },
+      "services": [
+        {
+          "port": 27017,
+          "name": "mongodb",
+          "http": false,
+          "publish": null
+        }
+      ],
+      "depends_on": [],
+      "inputs": [],
+      "volumes": {
+        "mongodata": "/data/db"
+      },
+      "resources": {
+        "cpus": 1,
+        "memory_mb": 512,
+        "disk_gb": 20
+      },
+      "gateway_of": [],
+      "routes": [],
+      "default_gateway": null,
+      "offline": true
+    },
+    "imds": {
+      "access": false,
+      "supplied": false,
+      "shapes": [
+        "docker"
+      ],
+      "arch": "amd64",
+      "os": null,
+      "windows": false,
+      "addresses": {
+        "lab": "10.60.15.30"
+      },
+      "docker_addresses": {
+        "lab": "10.60.15.30"
+      },
+      "services": [
+        {
+          "port": 8090,
+          "name": "imds",
+          "http": true,
+          "publish": null
+        }
+      ],
+      "depends_on": [],
+      "inputs": [],
+      "volumes": {},
+      "resources": {
+        "cpus": 1,
+        "memory_mb": 1024,
+        "disk_gb": 20
+      },
+      "gateway_of": [],
+      "routes": [],
+      "default_gateway": null,
+      "offline": true
+    },
+    "vault": {
+      "access": false,
+      "supplied": false,
+      "shapes": [
+        "docker"
+      ],
+      "arch": "amd64",
+      "os": null,
+      "windows": false,
+      "addresses": {
+        "lab": "10.60.15.31"
+      },
+      "docker_addresses": {
+        "lab": "10.60.15.31"
+      },
+      "services": [
+        {
+          "port": 8091,
+          "name": "vault",
+          "http": true,
+          "publish": null
+        }
+      ],
+      "depends_on": [],
+      "inputs": [],
+      "volumes": {},
+      "resources": {
+        "cpus": 1,
+        "memory_mb": 1024,
+        "disk_gb": 20
+      },
+      "gateway_of": [],
+      "routes": [],
+      "default_gateway": null,
+      "offline": true
+    },
+    "web": {
+      "access": false,
+      "supplied": false,
+      "shapes": [
+        "docker"
+      ],
+      "arch": "amd64",
+      "os": null,
+      "windows": false,
+      "addresses": {
+        "lab": "10.60.15.10"
+      },
+      "docker_addresses": {
+        "lab": "10.60.15.10"
+      },
+      "services": [
+        {
+          "port": 3000,
+          "name": "web",
+          "http": true,
+          "publish": 8888
+        }
+      ],
+      "depends_on": [
+        "db",
+        "mongo",
+        "imds",
+        "vault"
+      ],
+      "inputs": [],
+      "volumes": {},
+      "resources": {
+        "cpus": 1,
+        "memory_mb": 512,
+        "disk_gb": 20
+      },
+      "gateway_of": [],
+      "routes": [],
+      "default_gateway": null,
+      "offline": true
+    }
+  },
+  "start_order": [
+    "db",
+    "mongo",
+    "imds",
+    "vault",
+    "web"
+  ],
+  "clones": {},
+  "tools": {},
+  "groups": {},
+  "router": null,
+  "controller": {
+    "addresses": {
+      "lab": "10.60.15.253"
+    }
+  },
+  "published": [
+    {
+      "machine": "web",
+      "port": 3000,
+      "host_port": 8888
+    }
+  ],
+  "targets": {
+    "possible": [
+      "docker",
+      "hosted",
+      "docker-vm",
+      "cloud-docker",
+      "kubernetes"
+    ],
+    "generated": [
+      "docker",
+      "hosted",
+      "docker-vm",
+      "cloud-docker",
+      "kubernetes"
+    ],
+    "refused": {},
+    "not_possible": {
+      "hybrid": "only when some machines are containers and others are VMs",
+      "vagrant": "needs `vm:` on db, mongo, imds, vault, web",
+      "proxmox": "needs `vm:` on db, mongo, imds, vault, web",
+      "cloud-vm": "needs `vm:` on db, mongo, imds, vault, web",
+      "external": "needs `external:` on db, mongo, imds, vault, web"
+    }
+  },
+  "checks": {
+    "default_position": "networks",
+    "positions": [
+      {
+        "position": "networks",
+        "machine": null,
+        "runner": "isoloom-check",
+        "checks": [
+          {
+            "name": "the shop answers",
+            "derived": false,
+            "kind": "http",
+            "target": "http://web:3000/",
+            "expect": "200",
+            "wait": 180
+          },
+          {
+            "name": "the catalog search answers",
+            "derived": false,
+            "kind": "http",
+            "target": "http://web:3000/search?q=lamp",
+            "expect": "200",
+            "wait": 30
+          },
+          {
+            "name": "a lab account logs in",
+            "derived": false,
+            "kind": "script",
+            "target": "checks/login.sh",
+            "expect": "",
+            "wait": 0
+          },
+          {
+            "name": "the mock IMDS answers",
+            "derived": false,
+            "kind": "http",
+            "target": "http://imds:8090/",
+            "expect": "any",
+            "wait": 30
+          }
+        ]
+      },
+      {
+        "position": "db",
+        "machine": "db",
+        "runner": "isoloom-check-db",
+        "checks": [
+          {
+            "name": "mongo:27017 from db",
+            "derived": true,
+            "kind": "tcp",
+            "target": "10.60.15.21:27017",
+            "expect": "open",
+            "wait": 30
+          },
+          {
+            "name": "imds:8090 from db",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.30:8090/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "vault:8091 from db",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.31:8091/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "web:3000 from db",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.10:3000/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "no internet from db",
+            "derived": true,
+            "kind": "http",
+            "target": "http://1.1.1.1/",
+            "expect": "blocked",
+            "wait": 0
+          }
+        ]
+      },
+      {
+        "position": "mongo",
+        "machine": "mongo",
+        "runner": "isoloom-check-mongo",
+        "checks": [
+          {
+            "name": "db:5432 from mongo",
+            "derived": true,
+            "kind": "tcp",
+            "target": "10.60.15.20:5432",
+            "expect": "open",
+            "wait": 30
+          },
+          {
+            "name": "imds:8090 from mongo",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.30:8090/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "vault:8091 from mongo",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.31:8091/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "web:3000 from mongo",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.10:3000/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "no internet from mongo",
+            "derived": true,
+            "kind": "http",
+            "target": "http://1.1.1.1/",
+            "expect": "blocked",
+            "wait": 0
+          }
+        ]
+      },
+      {
+        "position": "imds",
+        "machine": "imds",
+        "runner": "isoloom-check-imds",
+        "checks": [
+          {
+            "name": "db:5432 from imds",
+            "derived": true,
+            "kind": "tcp",
+            "target": "10.60.15.20:5432",
+            "expect": "open",
+            "wait": 30
+          },
+          {
+            "name": "mongo:27017 from imds",
+            "derived": true,
+            "kind": "tcp",
+            "target": "10.60.15.21:27017",
+            "expect": "open",
+            "wait": 30
+          },
+          {
+            "name": "vault:8091 from imds",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.31:8091/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "web:3000 from imds",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.10:3000/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "no internet from imds",
+            "derived": true,
+            "kind": "http",
+            "target": "http://1.1.1.1/",
+            "expect": "blocked",
+            "wait": 0
+          }
+        ]
+      },
+      {
+        "position": "vault",
+        "machine": "vault",
+        "runner": "isoloom-check-vault",
+        "checks": [
+          {
+            "name": "db:5432 from vault",
+            "derived": true,
+            "kind": "tcp",
+            "target": "10.60.15.20:5432",
+            "expect": "open",
+            "wait": 30
+          },
+          {
+            "name": "mongo:27017 from vault",
+            "derived": true,
+            "kind": "tcp",
+            "target": "10.60.15.21:27017",
+            "expect": "open",
+            "wait": 30
+          },
+          {
+            "name": "imds:8090 from vault",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.30:8090/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "web:3000 from vault",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.10:3000/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "no internet from vault",
+            "derived": true,
+            "kind": "http",
+            "target": "http://1.1.1.1/",
+            "expect": "blocked",
+            "wait": 0
+          }
+        ]
+      },
+      {
+        "position": "web",
+        "machine": "web",
+        "runner": "isoloom-check-web",
+        "checks": [
+          {
+            "name": "db:5432 from web",
+            "derived": true,
+            "kind": "tcp",
+            "target": "10.60.15.20:5432",
+            "expect": "open",
+            "wait": 30
+          },
+          {
+            "name": "mongo:27017 from web",
+            "derived": true,
+            "kind": "tcp",
+            "target": "10.60.15.21:27017",
+            "expect": "open",
+            "wait": 30
+          },
+          {
+            "name": "imds:8090 from web",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.30:8090/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "vault:8091 from web",
+            "derived": true,
+            "kind": "http",
+            "target": "http://10.60.15.31:8091/",
+            "expect": "any",
+            "wait": 30
+          },
+          {
+            "name": "no internet from web",
+            "derived": true,
+            "kind": "http",
+            "target": "http://1.1.1.1/",
+            "expect": "blocked",
+            "wait": 0
+          }
+        ]
+      }
+    ]
+  },
+  "message": "NodeBazaar answers at http://localhost:8888/. Lab accounts:\nalice / alice123, bob / bob123, admin / admin123. The exploit guides are in\nbuild/web/app/docs/labs/; start with 01, the order IDOR.\n"
+}

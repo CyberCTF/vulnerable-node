@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=https://www.isoloom.com/schema/v1.json
+# Vulnerable Node, NodeBazaar (by Daniel Garcia, cr0hn) as an Isoloom spec: the upstream source,
+# vendored unchanged in build/web/app/, built by its Dockerfile with the compose environment
+# baked in, plus the PostgreSQL and MongoDB servers and the mock IMDS and vault services of
+# upstream's compose file (the SSRF targets, built from the vendored mocks/).
+# `isoloom generate`, then `isoloom up docker`.
+version: 1
+name: vulnerable-node
+
+networks:
+  lab: { cidr: 10.60.15.0/24, internet: false }
+
+machines:
+  db:
+    networks: { lab: 20 }
+    services: [{ port: 5432, name: postgres }]
+    volumes: { pgdata: /var/lib/postgresql/data }
+    resources: { cpus: 1, memory_mb: 512 }
+    docker:
+      build: build/db
+
+  mongo:
+    networks: { lab: 21 }
+    services: [{ port: 27017, name: mongodb }]
+    volumes: { mongodata: /data/db }
+    resources: { cpus: 1, memory_mb: 512 }
+    docker:
+      image: "mongo:7.0"
+
+  imds:
+    networks: { lab: 30 }
+    services: [{ port: 8090, name: imds, http: true }]
+    docker:
+      build: build/web/app/mocks/imds
+
+  vault:
+    networks: { lab: 31 }
+    services: [{ port: 8091, name: vault, http: true }]
+    docker:
+      build: build/web/app/mocks/vault
+
+  web:
+    networks: { lab: 10 }
+    services: [{ port: 3000, name: web, http: true, publish: 8888 }]
+    depends_on: [db, mongo, imds, vault]
+    resources: { cpus: 1, memory_mb: 512 }
+    docker:
+      build: build/web
+
+checks:
+  - name: the shop answers
+    http: http://web:3000/
+    wait: 180
+  - name: the catalog search answers
+    http: http://web:3000/search?q=lamp
+  - name: a lab account logs in
+    script: checks/login.sh
+  - name: the mock IMDS answers
+    http: http://imds:8090/
+    expect: any
+
+message: |
+  NodeBazaar answers at http://localhost:{{ machines.web.services.0.publish }}/. Lab accounts:
+  alice / alice123, bob / bob123, admin / admin123. The exploit guides are in
+  build/web/app/docs/labs/; start with 01, the order IDOR.
