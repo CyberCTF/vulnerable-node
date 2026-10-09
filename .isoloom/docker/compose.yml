@@ -9,6 +9,9 @@ services:
   db:
     build:
       context: ../../build/db
+      labels:
+        isoloom.managed: 'true'
+        isoloom.environment: vulnerable-node
     image: isoloom/vulnerable-node-db
     platform: linux/amd64
     hostname: db
@@ -39,6 +42,8 @@ services:
           memory: 512M
     labels:
       isoloom.service.postgres: tcp:5432
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
     restart: unless-stopped
   db-routes:
     image: alpine:3.20
@@ -60,6 +65,9 @@ services:
       db:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   mongo:
     image: mongo:7.0
     platform: linux/amd64
@@ -91,6 +99,8 @@ services:
           memory: 512M
     labels:
       isoloom.service.mongodb: tcp:27017
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
     restart: unless-stopped
   mongo-routes:
     image: alpine:3.20
@@ -112,9 +122,15 @@ services:
       mongo:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   imds:
     build:
       context: ../../build/web/app/mocks/imds
+      labels:
+        isoloom.managed: 'true'
+        isoloom.environment: vulnerable-node
     image: isoloom/vulnerable-node-imds
     platform: linux/amd64
     hostname: imds
@@ -139,6 +155,8 @@ services:
         condition: service_completed_successfully
     labels:
       isoloom.service.imds: http:8090
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
     restart: unless-stopped
   imds-routes:
     image: alpine:3.20
@@ -160,9 +178,15 @@ services:
       imds:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   vault:
     build:
       context: ../../build/web/app/mocks/vault
+      labels:
+        isoloom.managed: 'true'
+        isoloom.environment: vulnerable-node
     image: isoloom/vulnerable-node-vault
     platform: linux/amd64
     hostname: vault
@@ -187,6 +211,8 @@ services:
         condition: service_completed_successfully
     labels:
       isoloom.service.vault: http:8091
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
     restart: unless-stopped
   vault-routes:
     image: alpine:3.20
@@ -208,9 +234,15 @@ services:
       vault:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   web:
     build:
       context: ../../build/web
+      labels:
+        isoloom.managed: 'true'
+        isoloom.environment: vulnerable-node
     image: isoloom/vulnerable-node-web
     platform: linux/amd64
     hostname: web
@@ -258,6 +290,8 @@ services:
           memory: 512M
     labels:
       isoloom.service.web: http:3000
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
     restart: unless-stopped
   web-routes:
     image: alpine:3.20
@@ -279,6 +313,9 @@ services:
       web:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   isoloom-check:
     image: curlimages/curl:8.11.1
     profiles:
@@ -316,6 +353,9 @@ services:
         condition: service_healthy
       web-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   isoloom-check-db:
     image: curlimages/curl:8.11.1
     profiles:
@@ -347,6 +387,9 @@ services:
         condition: service_healthy
       web-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   isoloom-check-mongo:
     image: curlimages/curl:8.11.1
     profiles:
@@ -378,6 +421,9 @@ services:
         condition: service_healthy
       web-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   isoloom-check-imds:
     image: curlimages/curl:8.11.1
     profiles:
@@ -409,6 +455,9 @@ services:
         condition: service_healthy
       web-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   isoloom-check-vault:
     image: curlimages/curl:8.11.1
     profiles:
@@ -440,6 +489,9 @@ services:
         condition: service_healthy
       web-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   isoloom-check-web:
     image: curlimages/curl:8.11.1
     profiles:
@@ -471,6 +523,9 @@ services:
         condition: service_healthy
       web-routes:
         condition: service_healthy
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
   isoloom-probe-amd64:
     image: busybox:1.37.0-musl
     platform: linux/amd64
@@ -482,13 +537,28 @@ services:
     - isoloom-probe-amd64:/probe
     network_mode: none
     restart: no
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
 networks:
   lab:
     ipam:
       config:
       - subnet: 10.60.15.0/24
         gateway: 10.60.15.1
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
 volumes:
-  db-pgdata: {}
-  mongo-mongodata: {}
-  isoloom-probe-amd64: {}
+  db-pgdata:
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
+  mongo-mongodata:
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
+  isoloom-probe-amd64:
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node

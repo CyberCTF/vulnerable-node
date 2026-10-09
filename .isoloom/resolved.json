@@ -251,7 +251,8 @@
       "vagrant": "needs `vm:` on db, mongo, imds, vault, web",
       "proxmox": "needs `vm:` on db, mongo, imds, vault, web",
       "cloud-vm": "needs `vm:` on db, mongo, imds, vault, web",
-      "external": "needs `external:` on db, mongo, imds, vault, web"
+      "external": "needs `external:` on db, mongo, imds, vault, web",
+      "cloud-services": "left out by `targets:`"
     }
   },
   "checks": {
