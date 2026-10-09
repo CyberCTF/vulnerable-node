@@ -4,6 +4,5 @@
   "question": "Exploit the shop's vulnerabilities, from the order IDOR to the SSRF that reaches the vault secret.",
   "category": "WEB",
   "difficulty": 2,
-  "evidence_kind": "SECRET",
-  "capabilities": ["insecure-direct-object-reference", "server-side-request-forgery", "sql-injection", "nosql-injection", "jwt-attacks", "prototype-pollution"]
+  "evidence_kind": "SECRET"
 }
