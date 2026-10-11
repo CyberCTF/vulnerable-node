@@ -7,6 +7,9 @@
 version: 1
 name: vulnerable-node
 
+# Given by the CyberCTF launcher: this player's flag. Without it the development flag.
+inputs: [CTF_FLAG_MAIN]
+
 networks:
   lab: { cidr: 10.60.15.0/24, internet: false }
 
@@ -16,8 +19,10 @@ machines:
     services: [{ port: 5432, name: postgres }]
     volumes: { pgdata: /var/lib/postgresql/data }
     resources: { cpus: 1, memory_mb: 512 }
+    inputs: [CTF_FLAG_MAIN]
     docker:
       build: build/db
+      init: [ctf/flag.sh]
 
   mongo:
     networks: { lab: 21 }

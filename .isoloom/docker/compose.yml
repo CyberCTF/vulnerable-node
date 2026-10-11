@@ -18,6 +18,8 @@ services:
     networks:
       lab:
         ipv4_address: 10.60.15.20
+    environment:
+      CTF_FLAG_MAIN: ${CTF_FLAG_MAIN:-}
     volumes:
     - db-pgdata:/var/lib/postgresql/data
     - isoloom-probe-amd64:/.isoloom-probe:ro
@@ -65,6 +67,26 @@ services:
       db:
         condition: service_started
     restart: unless-stopped
+    labels:
+      isoloom.managed: 'true'
+      isoloom.environment: vulnerable-node
+  db-init-1:
+    image: isoloom/vulnerable-node-db
+    entrypoint:
+    - /bin/sh
+    - /isoloom/init/flag.sh
+    volumes:
+    - ../../ctf/flag.sh:/isoloom/init/flag.sh:ro
+    - db-pgdata:/var/lib/postgresql/data
+    network_mode: service:db
+    environment:
+      CTF_FLAG_MAIN: ${CTF_FLAG_MAIN:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      db-routes:
+        condition: service_healthy
+    restart: no
     labels:
       isoloom.managed: 'true'
       isoloom.environment: vulnerable-node
@@ -269,6 +291,8 @@ services:
         condition: service_completed_successfully
       db:
         condition: service_healthy
+      db-init-1:
+        condition: service_completed_successfully
       db-routes:
         condition: service_healthy
       mongo:
@@ -335,6 +359,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      db-init-1:
+        condition: service_completed_successfully
       db-routes:
         condition: service_healthy
       mongo:
@@ -369,6 +395,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      db-init-1:
+        condition: service_completed_successfully
       db-routes:
         condition: service_healthy
       mongo:
@@ -403,6 +431,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      db-init-1:
+        condition: service_completed_successfully
       db-routes:
         condition: service_healthy
       mongo:
@@ -437,6 +467,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      db-init-1:
+        condition: service_completed_successfully
       db-routes:
         condition: service_healthy
       mongo:
@@ -471,6 +503,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      db-init-1:
+        condition: service_completed_successfully
       db-routes:
         condition: service_healthy
       mongo:
@@ -505,6 +539,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      db-init-1:
+        condition: service_completed_successfully
       db-routes:
         condition: service_healthy
       mongo:
