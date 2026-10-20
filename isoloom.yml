@@ -8,50 +8,64 @@ version: 1
 name: vulnerable-node
 
 # Given by the CyberCTF launcher: this player's flag. Without it the development flag.
-inputs: [CTF_FLAG_MAIN]
+inputs:
+  CTF_FLAG_MAIN: {}
 
 networks:
-  lab: { cidr: 10.60.15.0/24, internet: false }
+  lab: {cidr: 10.60.15.0/24, internet: false}
 
 machines:
   db:
-    networks: { lab: 20 }
-    services: [{ port: 5432, name: postgres }]
-    volumes: { pgdata: /var/lib/postgresql/data }
-    resources: { cpus: 1, memory_mb: 512 }
-    inputs: [CTF_FLAG_MAIN]
-    docker:
+    networks: {lab: 20}
+    volumes: {pgdata: /var/lib/postgresql/data}
+    resources: {cpus: 1, memory_mb: 512}
+    ports:
+      postgres:
+        port: 5432
+    files:
+      - path: /run/lab/ctf_flag_main
+        input: CTF_FLAG_MAIN
+    setup:
+      - ctf/flag.sh
+    app:
       build: build/db
-      init: [ctf/flag.sh]
 
   mongo:
-    networks: { lab: 21 }
-    services: [{ port: 27017, name: mongodb }]
-    volumes: { mongodata: /data/db }
-    resources: { cpus: 1, memory_mb: 512 }
-    docker:
+    networks: {lab: 21}
+    volumes: {mongodata: /data/db}
+    resources: {cpus: 1, memory_mb: 512}
+    ports:
+      mongodb:
+        port: 27017
+    app:
       image: "mongo:7.0"
-
   imds:
-    networks: { lab: 30 }
-    services: [{ port: 8090, name: imds, http: true }]
-    docker:
+    networks: {lab: 30}
+    ports:
+      imds:
+        port: 8090
+        protocol: http
+    app:
       build: build/web/app/mocks/imds
-
   vault:
-    networks: { lab: 31 }
-    services: [{ port: 8091, name: vault, http: true }]
-    docker:
+    networks: {lab: 31}
+    ports:
+      vault:
+        port: 8091
+        protocol: http
+    app:
       build: build/web/app/mocks/vault
-
   web:
-    networks: { lab: 10 }
-    services: [{ port: 3000, name: web, http: true, publish: 8888 }]
+    networks: {lab: 10}
     depends_on: [db, mongo, imds, vault]
-    resources: { cpus: 1, memory_mb: 512 }
-    docker:
+    resources: {cpus: 1, memory_mb: 512}
+    ports:
+      web:
+        port: 3000
+        protocol: http
+        publish: true
+    app:
       build: build/web
-
 checks:
   - name: the shop answers
     http: http://web:3000/
@@ -65,6 +79,6 @@ checks:
     expect: any
 
 message: |
-  NodeBazaar answers at http://localhost:{{ machines.web.services.0.publish }}/. Lab accounts:
+  NodeBazaar answers at {{ machines.web.ports.web.url }}. Lab accounts:
   alice / alice123, bob / bob123, admin / admin123. The exploit guides are in
   build/web/app/docs/labs/; start with 01, the order IDOR.
